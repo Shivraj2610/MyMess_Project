@@ -1,10 +1,22 @@
 package com.app.repository;
 
-import com.app.model.user.User;
-import org.springframework.data.mongodb.repository.MongoRepository;
-
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.app.model.User;
+
 public interface UserRepository extends MongoRepository<User,String> {
-    Optional<User> findByEmail(String email);
+    /*
+        ######## Custom Method ##########
+     */
+
+
+     Optional<User> findByEmail(String contact);
+
+
+    Page<User> findByEmailIn(List<String> email, Pageable pageable);
 }

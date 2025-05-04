@@ -1,7 +1,12 @@
 package com.app.service;
 
+import com.app.dto.ApiResponse;
+import com.app.dto.MessOwnerLoginDto;
 import com.app.dto.UserLoginDto;
-import com.app.model.user.User;
+import com.app.exceptions.ResourceNotFoundException;
+import com.app.model.MessOwner;
+import com.app.model.User;
+import com.app.repository.MessOwnerRepository;
 import com.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,14 +19,31 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
+    private MessOwnerRepository messOwnerRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public boolean login(UserLoginDto loginDto) {
+    public ApiResponse login(UserLoginDto loginDto) {
         // Find user by email
         User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Check if password matches
-        return passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+        boolean matches = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+
+        return new ApiResponse(matches, "Login Successful");
+    }
+
+
+    public ApiResponse login(MessOwnerLoginDto loginDto) {
+        // Find user by email
+        MessOwner messOwner = messOwnerRepository.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Check if password matches
+        boolean matches = passwordEncoder.matches(loginDto.getPassword(), messOwner.getPassword());
+
+        return new ApiResponse(matches, "Login Successful");
     }
 }
